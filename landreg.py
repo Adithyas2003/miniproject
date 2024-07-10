@@ -1,75 +1,184 @@
 
-landreg = []
+print('LAND REGISTRATION SYSTEM')
 
-credentials = {}
+# Hardcoded admin credentials for simplicity
+admin_username = 'admin'
+admin_password = 'password'
 
-# Registration:
+# Hardcoded user credentials
+users = [{'username': 'anu', 'password': '7676'}]
+
+plots = []
+plot_id_counter = 1  # Counter for generating unique plot IDs
+
+authenticated = False
+
+while not authenticated:
+    username = input("\nEnter username: ")
+    password = input("Enter password: ")
+
+    # Check if the entered username and password match admin credentials
+    if username == admin_username and password == admin_password:
+        authenticated = True
+        print("Admin login successful!")
+        break
+
+    # Check if the entered username and password match any user credentials
+    for user in users:
+        if user['username'] == username and user['password'] == password:
+            authenticated = True
+            print("User login successful!")
+            break
+
+    if not authenticated:
+        print("Invalid username or password. Please try again.")
+
+# Once authenticated, proceed to the main menu
 while True:
-    print("Registration:")
-    reg_username = input("Choose a Username: ")
-    reg_password = input("Choose a Password: ")
+    print("\n1. Register a new plot")
+    print("2. View details of a plot")
+    print("3. Update plot details")
+    print("4. Display all plots")
+    print("5. Buy a plot")
+    print("6. Exit")
 
-    if reg_username in credentials:
-        print("Username already exists. Please choose another one.\n")
-    else:
-        credentials[reg_username] = reg_password
-        print("Registration successful.\n")
-        break  
+    choice = input("\nEnter your choice (1/2/3/4/5/6): ")
 
-# Login:
-while True:
-    print("Login:")
-    uname = input("Username: ")
-    pwd = input("Password: ")
+    if choice == '1':
+        # Register a new plot
+        print("\nEnter details for the new plot:")
+        plot = {}
+        plot['plot_id'] = plot_id_counter
+        plot['owner'] = input("Owner's name: ")
 
-    if uname in credentials and credentials[uname] == pwd:
-        print("Login successful.\n")
-        break  
-    else:
-        print("Invalid username or password. Please try again.\n")
+        # Validate area input
+        valid_area = False
+        while not valid_area:
+            area_input = input("Area of the plot (in square meters): ")
+            if area_input.isdigit() and int(area_input) > 0:
+                plot['area'] = float(area_input)
+                valid_area = True
+            else:
+                print("Invalid input. Please enter a valid positive number for area.")
 
-# Main menu:
-logged_in = True  
+        # Validate value input
+        valid_value = False
+        while not valid_value:
+            value_input = input("Estimated value of the plot (in dollars): ")
+            if value_input.isdigit() and int(value_input) > 0:
+                plot['value'] = float(value_input)
+                valid_value = True
+            else:
+                print("Invalid input. Please enter a valid positive number for value.")
 
-while logged_in:
-    print("Land Registration")
-    print("1. Register a new land")
-    print("2. View Registration")
-    print("3. Logout")
-    print("4. Exit")
-    ch = input("Enter Your Choice: ")
+        plots.append(plot)
+        plot_id_counter += 1
+        print("Plot registered successfully!")
 
-    if ch == '1':
-        owner = input("Enter The Owner's Name: ")
-        size = input("Enter The Size Of Land: ")
-        location = input("Enter The Location Of Land: ")
-
-        if owner and size and location:
-            landpar = {'owner': owner, 'size': size, 'location': location}
-            landreg.append(landpar)
-            print("Land parcel registered successfully.\n")
+    elif choice == '2':
+        # View details of a specific plot
+        if not plots:
+            print("No plots registered yet.")
         else:
-            print("Error: Please provide all details (Owner Name, Size, Location).\n")
+            plot_id = int(input("Enter plot ID to view details: "))
+            plot_found = False
+            for plot in plots:
+                if plot['plot_id'] == plot_id:
+                    print("\nPlot Details:")
+                    print(f"Plot ID: {plot['plot_id']}")
+                    print(f"Owner: {plot['owner']}")
+                    print(f"Area: {plot['area']} sqm")
+                    print(f"Value: ${plot['value']}")
+                    plot_found = True
+                    break
+            if not plot_found:
+                print(f"Plot with ID {plot_id} not found.")
 
-    elif ch == '2':
-        if not landreg:
-            print("No land parcels registered.\n")
+    elif choice == '3':
+        # Update plot details
+        if not plots:
+            print("No plots registered yet.")
         else:
-            for index, parcel in enumerate(landreg, start=1):
-                print(f"Parcel {index}:")
-                print(f"Owner: {parcel['owner']}")
-                print(f"Size: {parcel['size']}")
-                print(f"Location: {parcel['location']}")
-                print()
+            plot_id = int(input("Enter plot ID to update details: "))
+            plot_found = False
+            for plot in plots:
+                if plot['plot_id'] == plot_id:
+                    print("\nCurrent Plot Details:")
+                    print(f"Plot ID: {plot['plot_id']}")
+                    print(f"Owner: {plot['owner']}")
+                    print(f"Area: {plot['area']} sqm")
+                    print(f"Value: ${plot['value']}")
+                    print("\nEnter new details for the plot:")
+                    plot['owner'] = input("New owner's name (press Enter to keep current): ") or plot['owner']
 
-    elif ch == '3':
-        print("Logging out.\n")
-        logged_in = False  
+                    # Validate new area input
+                    valid_area = False
+                    while not valid_area:
+                        new_area_input = input("New area of the plot (in square meters, press Enter to keep current): ")
+                        if new_area_input == '':
+                            break
+                        elif new_area_input.isdigit() and int(new_area_input) > 0:
+                            plot['area'] = float(new_area_input)
+                            valid_area = True
+                        else:
+                            print("Invalid input. Please enter a valid positive number for area.")
 
-    elif ch == '4':
-        print("Exiting The System.")
-        logged_in = False  
+                    # Validate new value input
+                    valid_value = False
+                    while not valid_value:
+                        new_value_input = input("New estimated value of the plot (in dollars, press Enter to keep current): ")
+                        if new_value_input == '':
+                            break
+                        elif new_value_input.isdigit() and int(new_value_input) > 0:
+                            plot['value'] = float(new_value_input)
+                            valid_value = True
+                        else:
+                            print("Invalid input. Please enter a valid positive number for value.")
+
+                    print("Plot details updated successfully!")
+                    plot_found = True
+                    break
+            if not plot_found:
+                print(f"Plot with ID {plot_id} not found.")
+
+    elif choice == '4':
+        # Display all registered plots
+        print("\nAll Registered Plots:")
+        if not plots:
+            print("No plots registered yet.")
+        else:
+            for plot in plots:
+                print(f"Plot ID: {plot['plot_id']}, Owner: {plot['owner']}, Area: {plot['area']} sqm, Value: ${plot['value']}")
+
+    elif choice == '5':
+        # Buy a plot
+        if not plots:
+            print("No plots available to buy.")
+        else:
+            plot_id = int(input("Enter plot ID to buy: "))
+            plot_found = False
+            for plot in plots:
+                if plot['plot_id'] == plot_id:
+                    print("\nBuying Plot Details:")
+                    print(f"Plot ID: {plot['plot_id']}")
+                    print(f"Owner: {plot['owner']}")
+                    print(f"Area: {plot['area']} sqm")
+                    print(f"Value: ${plot['value']}")
+                    confirm = input("Confirm purchase (yes/no): ").lower()
+                    if confirm == 'yes':
+                        plots.remove(plot)
+                        print("Plot purchased successfully!")
+                    else:
+                        print("Purchase cancelled.")
+                    plot_found = True
+                    break
+            if not plot_found:
+                print(f"Plot with ID {plot_id} not found.")
+
+    elif choice == '6':
+        # Exit the program
+        print("Exiting the Land Registration System. Goodbye!")
         break
 
     else:
-        print("Invalid choice. Please try again.\n")
+        print("Invalid choice! Please enter 1, 2, 3, 4, 5, or 6.")
