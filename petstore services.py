@@ -15,5 +15,11 @@ class Dog(pet):
         print("Enter Dog name")
     def Dog_age(s):
         print("Enter the Dog age")
-    def Dog
+    def Dog_breed(s):
+        print("Enter the breed")
+class cat(pet):
+    print("cat details")
+    def cat_name(s):
+        print("Enter the  cat name")
+    
 
